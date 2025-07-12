@@ -1,0 +1,24 @@
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vlm_robot_agent"
+version = "0.1.0"
+description = "Agente robótico basado en VLM que navega e interactúa con personas según objetivos visuales"
+authors = [
+  { name="Tu Nombre", email="tunombre@ejemplo.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["robotics", "vlm", "openai", "navigation", "interaction"]
+
+[tool.setuptools.packages.find]
+where = ["vlm_robot_agent"]
+
+[project.urls]
+"Homepage" = "https://github.com/EjbejaranosAI/vlm_robot_agent"
+"Repository" = "https://github.com/EjbejaranosAI/vlm_robot_agent"
