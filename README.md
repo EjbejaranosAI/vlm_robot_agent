@@ -5,9 +5,6 @@
 
 Library designed to use VLMs in the context of robotics actions for planning and interactions
 
-<p align="center">
-  <img src="img/edison-bejarano.png" alt="Edison Bejarano" width="300"/>
-</p>
 
 
 Un **agente robótico inteligente** basado en modelos de lenguaje visual (VLM), que puede percibir el entorno desde una imagen, planificar acciones y decidir entre **navegar** o **interactuar con personas** para alcanzar un objetivo dado (como entrar en una habitación, buscar un baño, etc).
@@ -97,3 +94,6 @@ MIT
 - Soporte para entrada multimodal (texto + imagen)
 
 
+<p align="center">
+  <img src="img/edison-bejarano.png" alt="Edison Bejarano" width="300"/>
+</p>
