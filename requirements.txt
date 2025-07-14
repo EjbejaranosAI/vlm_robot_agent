@@ -1,0 +1,5 @@
+pyttsx3 
+openai-whisper 
+sounddevice 
+soundfile 
+numpy
