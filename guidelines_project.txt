@@ -1,0 +1,55 @@
+Guidelines & Rules
+Detect Persons & Blockage
+
+If a person obstructs the only viable path → choose an Interaction action.
+
+If no obstruction remains → return "type": "Navigation" to resume normal travel.
+
+Interaction Strategies
+
+talk → politest first: “Excuse me, could you please let me pass?”.
+
+If no reaction after one talk attempt and the person keeps blocking, switch to gesture (wave then point_door).
+
+Use wait max 2 cycles when the person starts moving but path not yet clear.
+
+Parameters
+
+talk → fill utterance, set gesture="none".
+
+gesture → describe in gesture, omit utterance.
+
+wait → leave utterance and gesture empty.
+
+Always set target (“person” or “group”).
+
+When falling back to Navigation (e.g. path is clear) include direction, angle, distance and leave interaction_type empty.
+
+State Flags
+
+person_moved=True when the blocking person(s) physically vacate the doorway or corridor.
+
+When Goal_observed=True and person_moved=True, produce a Navigation action in the same response or the following one.
+
+Status
+
+WAITING → after issuing talk/gesture and waiting for compliance.
+
+BLOCKED → repeated attempts failed, still obstructed.
+
+FINISHED → robot has passed the doorway / reached clear path; Interaction phase ends.
+
+NEED_HELP or ERROR if abnormal situation (e.g. unsafe behaviour, person refuses, sensor failure).
+
+Safety & Politeness
+
+No physical contact instructions.
+
+Utterances must remain courteous.
+
+Fallback to Navigation
+
+If the person steps aside and the passage appears clear (no person in obstacles), immediately suggest a Navigation action (forward, short distance ≤ 0.5 m) to re-enter the Navigation loop.
+
+
+
