@@ -1,5 +1,5 @@
 """
-vlm_robot_agent/vlm_agent/conversation.py
+    vlm_robot_agent/vlm_agent/conversation.py
 ----------------------------------------
 • El LLM crea la charla y decide cuándo insertar
   #HUMANO_DESPEJO_PASO | #HUMANO_RECHAZO | #HUMANO_SIN_RESPUESTA.
@@ -22,9 +22,9 @@ from vlm_robot_agent.vlm_agent.io import speech_io
 PROMPT_FILE = "conversation_prompts.json"
 TAG_RE = re.compile(r"#HUMANO_(?:DESPEJO_PASO|RECHAZO|SIN_RESPUESTA)", re.I)
 
-POS_TAG = "#HUMANO_DESPEJO_PASO"
-NEG_TAG = "#HUMANO_RECHAZO"
-SIL_TAG = "#HUMANO_SIN_RESPUESTA"
+POS_TAG = "Clear"
+NEG_TAG = "Not_Clear"
+SIL_TAG = "Silence"
 
 
 # ---------- utils --------------------------------------------------
@@ -225,7 +225,7 @@ class ConversationManager:
 
 # --------------- CLI -------------------
 if __name__ == "__main__":
-    cm = ConversationManager(goal="entrar en la oficina doce", prompt_key="gracioso", silence_limit=10)
+    cm = ConversationManager(goal="entrar en la oficina doce", prompt_key="default", silence_limit=5)
 
     while cm.interactive_turn(listen_secs=5):
         pass
@@ -234,3 +234,5 @@ if __name__ == "__main__":
     print(cm.dump())
     if cm.final_result:
         print(f"\n### Conversación concluida con etiqueta: {cm.final_result}")
+
+

@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# perception.py
+# vlm_robot_agent/vlm_agent/perception.py
 # ---------------------------------------------------------------------------
 from __future__ import annotations
 
@@ -44,13 +44,11 @@ class Perception:
             goal=goal_text,
             provider=provider,
             history_size=history_size,
-            prompt_name="navigation",
         )
         self._interaction_engine = VLMInference(
             goal=goal_text,
             provider=provider,
             history_size=history_size,
-            prompt_name="interaction",
         )
 
     # ------------------------------------------------------------------
@@ -81,3 +79,39 @@ class Perception:
             ),
         }
         return observation
+
+    def is_visible(self, img: Union[str, Path, Image.Image, np.ndarray]) -> bool:
+        """Devuelve True si el objetivo (target) es observado en la imagen."""
+        observation = self.perceive(img, mode="navigation")
+        return observation["goal_observed"]
+# ---------------------------------------------------------------------------
+if __name__ == "__main__":
+    import argparse
+    from pathlib import Path
+    from pprint import pprint
+    from PIL import Image
+
+    parser = argparse.ArgumentParser(description="Test rápido de Perception")
+    parser.add_argument("--image", type=Path, required=True, help="Ruta a la imagen")
+    parser.add_argument("--goal", default="Find the person", help="Meta actual")  # por defecto persona
+
+    parser.add_argument("--mode", choices=["navigation", "interaction"],
+                        default="navigation", help="Modo de inferencia")
+    args = parser.parse_args()
+
+    # Instanciamos
+    perceptor = Perception(goal_text=args.goal)
+
+    # Cargamos imagen
+    img = Image.open(args.image)
+
+    # Inferimos
+    obs = perceptor.perceive(img, mode=args.mode)
+
+    print("\n─ Observation ─")
+    pprint(obs, sort_dicts=False)
+
+    # Consultamos visibilidad
+    is_person_visible = perceptor.is_visible(img)
+
+    print(f"\n🧑‍🦱 ¿Está visible la persona (objetivo '{args.goal}')?: {'✅ SÍ' if is_person_visible else '❌ NO'}")

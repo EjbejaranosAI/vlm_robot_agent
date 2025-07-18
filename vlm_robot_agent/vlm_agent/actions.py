@@ -1,3 +1,6 @@
+# ---------------------------------------------------------------------------
+# vlm_robot_agent/vlm_agent/actions.py
+# ---------------------------------------------------------------------------
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Any
 from .action_types import ActionKind, NavigationDirection, InteractionType

@@ -1,24 +1,42 @@
-# pyproject.toml
-
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "tomli>=2.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "vlm_robot_agent"
-version = "0.1.0"
+version = "0.2.0"
 description = "Agente robótico basado en VLM que navega e interactúa con personas según objetivos visuales"
-authors = [
-  { name="Tu Nombre", email="tunombre@ejemplo.com" }
-]
-license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
+license = { text = "MIT" }
 keywords = ["robotics", "vlm", "openai", "navigation", "interaction"]
-
-[tool.setuptools.packages.find]
-where = ["vlm_robot_agent"]
+authors = [
+    { name = "Edison Bejarano", email = "edison.bejarano@upc.edu" }
+]
+dependencies = [
+    "openai==1.78.1",
+    "opencv-python==4.11.0.86",
+    "pyyaml",
+    "python-dotenv>=0.9.1,<0.11",
+    "pillow==11.3.0",
+    "sounddevice==0.5.2",
+    "TTS==0.22.0",
+    "openai-whisper==20250625"
+]
 
 [project.urls]
-"Homepage" = "https://github.com/EjbejaranosAI/vlm_robot_agent"
-"Repository" = "https://github.com/EjbejaranosAI/vlm_robot_agent"
+Homepage = "https://github.com/EjbejaranosAI/vlm_robot_agent"
+Repository = "https://github.com/EjbejaranosAI/vlm_robot_agent"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "vlm_robot_agent*",
+    "vlm_agent*",
+    "vlm_inference*"
+]
+
+[tool.setuptools.package-data]
+"vlm_robot_agent.prompts" = ["*.json"]
+"vlm_agent.prompts" = ["*.json"]
+"vlm_inference.prompts" = ["*.json"]

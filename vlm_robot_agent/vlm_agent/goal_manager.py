@@ -1,3 +1,8 @@
+# ---------------------------------------------------------------------------
+# vlm_robot_agent/vlm_agent/goal_manager.py
+# ---------------------------------------------------------------------------
+
+
 from collections import deque
 from dataclasses import dataclass
 from typing import Deque, List, Optional
@@ -32,3 +37,5 @@ class GoalManager:
     def pop_finished(self) -> None:
         while self.goal_stack and self.goal_stack[-1].finished:
             self.goal_stack.pop()
+
+

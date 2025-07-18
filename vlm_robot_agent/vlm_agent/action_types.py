@@ -1,3 +1,7 @@
+# ---------------------------------------------------------------------------
+# vlm_robot_agent/vlm_agent/action_types.py
+# ---------------------------------------------------------------------------
+
 from enum import Enum
 
 class NavigationDirection(str, Enum):

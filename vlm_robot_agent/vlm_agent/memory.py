@@ -1,3 +1,7 @@
+# ---------------------------------------------------------------------------
+# vlm_robot_agent/vlm_agent/memory.py
+# ---------------------------------------------------------------------------
+
 from collections import deque
 from typing import Deque, Dict, Any
 from .actions import Action

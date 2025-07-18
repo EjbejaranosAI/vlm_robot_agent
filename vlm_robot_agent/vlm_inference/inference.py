@@ -1,4 +1,4 @@
-"""vlm_inference/inference.py
+"""# vlm_robot_agent/vlm_inference/inference.py
 ================================
 Vision‑Language‑Model (VLM) Inference engine specialised for indoor robot
 navigation & interaction.  Works either against the OpenAI Vision model
@@ -35,6 +35,7 @@ from collections import deque
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, TypedDict, Union
+from importlib import resources
 
 import numpy as np
 import yaml  # optional: if you want YAML config files
@@ -49,6 +50,10 @@ __all__ = [
     "InferenceResult",
     "VLMInference",
 ]
+
+
+PROMPT_FILE_JSON = "navigation_prompts.json"
+
 
 ###############################################################################
 # Logging & utility helpers                                                   #
@@ -208,15 +213,23 @@ class VLMInference:
     # ---------------------------------------------------------------------
     # Prompt management
     # ---------------------------------------------------------------------
-
-    def _load_prompt(self, path: str | Path | None) -> str:
-        if path is None:
-            # Default navigation prompt relative to this file
-            path = Path(__file__).with_name("navigation_prompt.txt")
-        try:
+    def _load_prompt(self, path: str | Path | None, prompt_key: str = "default") -> str:
+        """Return the prompt string either from an explicit file or from the packaged JSON."""
+        # 1️⃣  explicit text file wins
+        if path is not None:
             return Path(path).read_text(encoding="utf-8")
-        except FileNotFoundError as e:
-            raise VLMInferenceError(f"Prompt file not found: {path}") from e
+
+        # 2️⃣  fallback to packaged JSON
+        
+        with resources.files("vlm_robot_agent.prompts").joinpath(PROMPT_FILE_JSON).open("r", encoding="utf-8") as f:
+            print(f)
+            print("-------------------")
+            data = json.load(f)
+        try:
+            return data[prompt_key]["system"]
+        except KeyError as exc:
+            raise VLMInferenceError(f"Prompt key '{prompt_key}' not found in {PROMPT_FILE_JSON}") from exc
+
 
     def _format_prompt(self) -> str:
         history_lines: list[str] = []
@@ -273,13 +286,24 @@ class VLMInference:
 
     def _parse_response(self, raw: str) -> InferenceResult:
         clean = raw.strip()
+
+        # --- elimina bloque ``` … ``` si existe
         if clean.startswith("```"):
             clean = clean.split("```", 2)[1].strip()
+
+        # --- elimina prefijo opcional “json” o similar
+        if clean.lower().startswith("json"):
+            idx = clean.find("{")
+            if idx != -1:
+                clean = clean[idx:]          # nos quedamos desde “{” en adelante
+
         try:
             data = json.loads(clean)
         except json.JSONDecodeError as e:
-            raise VLMInferenceError(f"Invalid JSON from model: {e}; text={clean[:200]}") from e
-
+            raise VLMInferenceError(
+                f"Invalid JSON from model: {e}; text={clean[:200]}"
+            ) from e
+        
         # status
         status = Status(data.get("status", "ERROR"))
 
@@ -317,18 +341,48 @@ class VLMInference:
             )
 
 
-###############################################################################
-# Stand‑alone demo                                                            #
-###############################################################################
-
+#/home/edison/Desktop/PhD/vlm_robot_agent/img/1_center.jpg
+# -------------------------------------------------------------------------
+# Stand-alone demo
+# -------------------------------------------------------------------------
 if __name__ == "__main__":
-    import argparse, pprint
+    import argparse, glob, pprint, sys
+    from pathlib import Path
 
-    parser = argparse.ArgumentParser(description="Quick test for VLMInference")
-    parser.add_argument("image", help="path to RGB image file")
-    parser.add_argument("goal", help="navigation goal", nargs="?", default="Go to the bathroom")
+    # ---------- helper defaults ----------
+    def _default_image() -> str:
+        # Coge la primera JPG/PNG encontrada dentro de ./img (si existe)
+        here = Path(__file__).parent.parent.parent  # …/vlm_robot_agent
+        imgs = glob.glob(str(here / "img" / "*.[jp][pn]g"))
+        return imgs[0] if imgs else ""
+
+    # ---------- CLI ----------
+    parser = argparse.ArgumentParser(
+        description="Quick test for VLMInference (OpenAI Vision)",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "-i", "--image",
+        metavar="PATH",
+        default=_default_image(),
+        help="path to RGB image file",
+    )
+    parser.add_argument(
+        "-g", "--goal",
+        default="Entrar en la oficina 12",
+        help="navigation goal text",
+    )
     args = parser.parse_args()
 
+    # ---------- sanity checks ----------
+    if not args.image:
+        sys.exit("❌  No image found/provided. Use --image PATH.")
+    if not Path(args.image).exists():
+        sys.exit(f"❌  Image not found: {args.image}")
+
+    # ---------- run inference ----------
     engine = VLMInference(goal=args.goal)
-    res = engine.infer(args.image)
-    pprint.pprint(res)
+    result = engine.infer(args.image)
+
+    pprint.pprint(result, compact=True, width=120)
+

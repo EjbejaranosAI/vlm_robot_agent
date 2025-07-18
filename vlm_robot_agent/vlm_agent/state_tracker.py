@@ -1,20 +1,43 @@
+# ---------------------------------------------------------------------------
+# vlm_robot_agent/vlm_agent/state_tracker.py
+# ---------------------------------------------------------------------------
+
 from enum import Enum, auto
 
 class AgentState(Enum):
-    NAVIGATING = auto()
+    IDLE = auto()
+    PLANNING = auto()
+    MOVING = auto()
+    NAVIGATING = auto()     # Estado para navegación activa
     INTERACTING = auto()
-    FINISHED = auto()
+    TALKING = auto()        # Estado para interacción hablada
+    WAITING_REPLY = auto()  # Esperando respuesta humana
+    FINISHED = auto()       # Estado finalizado
 
 class StateTracker:
     def __init__(self) -> None:
         self.state = AgentState.NAVIGATING
+        self.last_observation = None  # Guarda la última observación para referencia interna
+
+    def update_last_observation(self, observation: dict) -> None:
+        """
+        Actualiza el estado basado en la última observación recibida.
+        """
+        self.last_observation = observation
+        # Aquí puedes decidir cambiar estado o mantenerlo
+        # Ejemplo simple:
+        if observation.get("goal_observed") and self.state != AgentState.FINISHED:
+            # Si estoy interactuando y ya no hay persona bloqueando, cambio a navegar
+            if self.state in {AgentState.INTERACTING, AgentState.TALKING, AgentState.WAITING_REPLY}:
+                if "person" not in observation.get("obstacles", []):
+                    self.state = AgentState.NAVIGATING
+            # Si ya entré en la sala marco estado finalizado
+            if observation.get("room_entered"):
+                self.state = AgentState.FINISHED
 
     def update(self, last_action, last_obs) -> None:
-        if last_obs.get("goal_observed") and self.state != AgentState.FINISHED:
-            if last_action.kind == "interaction":
-                # Si la persona se ha movido ya, volvemos a navegar
-                if "person" not in last_obs["obstacles"]:
-                    self.state = AgentState.NAVIGATING
-            elif last_action.kind == "navigation" and last_obs.get("room_entered"):
-                self.state = AgentState.FINISHED
-        # Otros cambios de estado según reglas …
+        """
+        Método adicional para actualizar estado usando última acción y observación,
+        puede ser llamado desde fuera si se prefiere.
+        """
+        self.update_last_observation(last_obs)
