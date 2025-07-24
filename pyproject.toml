@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vlm_robot_agent"
-version = "0.2.0"
+version = "0.3.2"
 description = "Agente robótico basado en VLM que navega e interactúa con personas según objetivos visuales"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -18,14 +18,17 @@ dependencies = [
     "opencv-python==4.11.0.86",
     "pyyaml",
     "python-dotenv>=0.9.1,<0.11",
-    "pillow==11.3.0",
+    "pillow==9.0.1",
+    "protobuf>=4.25.3,<5",
+    "numpy>=1.24,<1.27",
+    "scipy>=1.12",
     "sounddevice==0.5.2",
-    "TTS==0.22.0",
-    "openai-whisper==20250625"
+    "coqui-tts",
+    "openai-whisper==20240930"
 ]
 
 [project.urls]
-Homepage = "https://github.com/EjbejaranosAI/vlm_robot_agent"
+Homepage   = "https://github.com/EjbejaranosAI/vlm_robot_agent"
 Repository = "https://github.com/EjbejaranosAI/vlm_robot_agent"
 
 [tool.setuptools.packages.find]
@@ -38,5 +41,5 @@ include = [
 
 [tool.setuptools.package-data]
 "vlm_robot_agent.prompts" = ["*.json"]
-"vlm_agent.prompts" = ["*.json"]
-"vlm_inference.prompts" = ["*.json"]
+"vlm_agent.prompts"       = ["*.json"]
+"vlm_inference.prompts"   = ["*.json"]
