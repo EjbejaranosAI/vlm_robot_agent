@@ -58,8 +58,9 @@ warnings.filterwarnings(
     category=UserWarning,
 )
 
-_STT = whisper.load_model("tiny")   # ~60 MB CPU
-_STT = whisper.load_model("tiny", device="cpu")
+  
+device = "cuda" if torch.cuda.is_available() else "cpu"
+_STT = whisper.load_model("tiny", device=device) # ~60 MB CPU
 
 def transcribe_file(path: str | Path) -> str:
     return _STT.transcribe(str(path), language="es", fp16=False)["text"].strip()
